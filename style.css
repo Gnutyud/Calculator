@@ -8,7 +8,7 @@
 }
 
 body {
-    font-family: "poppins", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: #2d3e50;
 }
 
@@ -26,16 +26,14 @@ body {
 }
 
 .screen {
-    background-color: #e6e6e6;
+    background-color: #e9e9ea;
     width: 100%;
     height: 160px;
     padding: 5px 10px;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 .input {
-    background-color: #e6e6e6;
+    background-color: #e9e9ea;
     width: 100%;
     height: 300px;
 }
@@ -45,33 +43,27 @@ body {
     /* background-color: red; */
 }
 
-.operation .result {
-    width: 100%;
-    height: 60px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    border-bottom: 1px solid grey;
-}
-
-.operation {
-    /* background-color: red; */
-}
-
-.result {
-    /* background-color: royalblue; */
-}
-
 .operation .value {
     text-align: right;
-    font-size: 40px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 400;
+    padding-right: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    color: rgba(black, black, black, 0.1);
 }
 
 .result .value {
     text-align: right;
-    font-size: 45px;
-    font-weight: 600;
+    font-size: 40px;
+    font-weight: 500;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    height: 60px;
 }
 
 .input {
@@ -85,11 +77,47 @@ body {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
-    /* grid-gap: 1px; */
 }
 
 .row button {
     font-size: 20px;
-    width: calc(320px/4 - 4px);
-    height: calc(300px/5 - 4px);
+    width: calc(320px/4 - 2px);
+    height: calc(300px/5 - 2px);
+    outline: none;
+    border: none;
+    font-family: inherit;
+}
+
+.row button:hover,
+#percent:hover,
+#plusMinus:hover {
+    background-color: #bcbcbc;
+}
+
+.row .number,
+#plusMinus {
+    font-weight: 500;
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+.row .calculate {
+    background-color: rgba(66, 133, 244, 0.8);
+    font-size: 26px;
+}
+
+.row .calculate:hover {
+    background-color: rgba(66, 133, 244, 1);
+}
+
+.row .operator,
+.row .key,
+#percent {
+    background-color: #f2f2f2;
+    color: #282828;
+    font-weight: 300;
+}
+
+.row .operator {
+    font-size: 26px;
 }
