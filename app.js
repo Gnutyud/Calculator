@@ -55,7 +55,67 @@ input.addEventListener("click", (event) => {
         }
     });
 });
-// calculator function
+// Add keydown event and calculate
+document.addEventListener("keydown", keydown);
+
+function keydown(e) {
+    if (!isNaN(e.key)) {
+        data.operation.push(e.key);
+        data.result.push(e.key);
+        updateOperator(data.operation.join(""));
+    }
+    switch (e.key) {
+        case "c":
+        case "Escape":
+            data.operation = [];
+            data.result = [];
+            updateResult(0);
+            updateOperator(data.operation.join(""));
+            break;
+        case "Backspace":
+            data.operation.pop();
+            data.result.pop();
+            updateOperator(data.operation.join(""));
+            break;
+        case "Enter":
+        case "=":
+            if (!data.operation.join("").match(/$[=]/) &&
+                data.operation.join("") != ""
+            ) {
+                data.operation.push("=");
+                updateOperator(data.operation.join(""));
+            }
+            //
+            let resultString = data.result.join("");
+            let myResult = eval(resultString);
+            myResult = formatResult(myResult);
+            updateResult(myResult);
+            data.operation = [];
+            data.result = [];
+            data.operation.push(myResult);
+            data.result.push(myResult);
+            break;
+        case ".":
+        case "+":
+        case "-":
+        case "%":
+            data.operation.push(e.key);
+            data.result.push(e.key);
+            updateOperator(data.operation.join(""));
+            break;
+        case "*":
+            data.operation.push("x");
+            data.result.push(e.key);
+            updateOperator(data.operation.join(""));
+            break;
+        case "/":
+            data.operation.push("÷");
+            data.result.push(e.key);
+            updateOperator(data.operation.join(""));
+            break;
+    }
+}
+// calculator function when click
 
 function calculator(button) {
     if (button.type == "operator") {
@@ -63,6 +123,11 @@ function calculator(button) {
         data.result.push(button.formula);
         data.history.push(button.formula);
     } else if (button.type == "number") {
+        if (isThatOperator(operationStr.length - 1)) {
+            data.operation = [];
+            data.result = [];
+            updateResult(0);
+        }
         data.operation.push(button.symbol);
         data.result.push(button.formula);
         data.history.push(button.formula);
@@ -89,16 +154,7 @@ function calculator(button) {
             data.operation.push(button.symbol);
             updateOperator(data.operation.join(""));
         }
-        // if (data.operation.join("").match(/$[=]/)) {
-        //     data.operation.push(
-        //         data.operation[preOperation.length - 3],
-        //         data.operation[preOperation.length - 2]
-        //     );
-        //     data.result.push(
-        //         data.operation[preOperation.length - 3],
-        //         data.operation[preOperation.length - 2]
-        //     );
-        // }
+
         // display calculate result
         let preOperation = data.operation.slice();
         let resultString = data.result.join("");
@@ -151,3 +207,4 @@ function counterNum(number) {
 function isFloat(n) {
     return n % 1 !== 0;
 }
+// check is that operator
