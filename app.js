@@ -123,11 +123,9 @@ function calculator(button) {
         data.result.push(button.formula);
         data.history.push(button.formula);
     } else if (button.type == "number") {
-        if (isThatOperator(operationStr.length - 1)) {
-            data.operation = [];
-            data.result = [];
-            updateResult(0);
-        }
+        data.operation = [];
+        data.result = [];
+        updateResult(0);
         data.operation.push(button.symbol);
         data.result.push(button.formula);
         data.history.push(button.formula);
