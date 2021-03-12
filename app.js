@@ -116,7 +116,7 @@ function keydown(e) {
 
 function calculator(button) {
     let historyStr = data.history.join(""),
-        operationStr = data.operation.join(""),
+        operationStr = data.operation.join("");
         if (button.type == "operator") {
             data.operation.push(button.symbol);
             data.result.push(button.formula);
