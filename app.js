@@ -24,6 +24,7 @@ const input = document.querySelector(".input"),
     output_result = document.querySelector(".result .value"),
     output_operation = document.querySelector(".operation .value");
 let data = { operation: [], result: [], history: [] };
+
 // create calculator buttons
 function createButtons() {
     const btns_per_row = 4;
@@ -59,9 +60,16 @@ input.addEventListener("click", (event) => {
 document.addEventListener("keydown", keydown);
 
 function keydown(e) {
+    let historyStr = data.history.join("");
     if (!isNaN(e.key)) {
+        if (historyStr[historyStr.length - 1] === "=") {
+            data.operation = [];
+            data.result = [];
+            updateResult(e.key);
+        }
         data.operation.push(e.key);
         data.result.push(e.key);
+        data.history.push(e.key);
         updateOperator(data.operation.join(""));
     }
     switch (e.key) {
@@ -79,21 +87,7 @@ function keydown(e) {
             break;
         case "Enter":
         case "=":
-            if (!data.operation.join("").match(/$[=]/) &&
-                data.operation.join("") != ""
-            ) {
-                data.operation.push("=");
-                updateOperator(data.operation.join(""));
-            }
-            //
-            let resultString = data.result.join("");
-            let myResult = eval(resultString);
-            myResult = formatResult(myResult);
-            updateResult(myResult);
-            data.operation = [];
-            data.result = [];
-            data.operation.push(myResult);
-            data.result.push(myResult);
+            pressEqual();
             break;
         case ".":
         case "+":
@@ -101,16 +95,19 @@ function keydown(e) {
         case "%":
             data.operation.push(e.key);
             data.result.push(e.key);
+            data.history.push(e.key);
             updateOperator(data.operation.join(""));
             break;
         case "*":
             data.operation.push("x");
             data.result.push(e.key);
+            data.history.push(e.key);
             updateOperator(data.operation.join(""));
             break;
         case "/":
             data.operation.push("÷");
             data.result.push(e.key);
+            data.history.push(e.key);
             updateOperator(data.operation.join(""));
             break;
     }
@@ -118,14 +115,20 @@ function keydown(e) {
 // calculator function when click
 
 function calculator(button) {
-    if (button.type == "operator") {
-        data.operation.push(button.symbol);
-        data.result.push(button.formula);
-        data.history.push(button.formula);
-    } else if (button.type == "number") {
-        data.operation = [];
-        data.result = [];
-        updateResult(0);
+    let historyStr = data.history.join(""),
+        operationStr = data.operation.join(""),
+        if (button.type == "operator") {
+            data.operation.push(button.symbol);
+            data.result.push(button.formula);
+            data.history.push(button.formula);
+        } else
+    if (button.type == "number") {
+        // reset operation
+        if (historyStr[historyStr.length - 1] === "=") {
+            data.operation = [];
+            data.result = [];
+            updateResult(button.formula);
+        }
         data.operation.push(button.symbol);
         data.result.push(button.formula);
         data.history.push(button.formula);
@@ -138,36 +141,63 @@ function calculator(button) {
             data.operation.pop();
             data.result.pop();
         } else if (button.name == "plusMinus") {
-            let operationStr = data.operation.join("");
             if (!operationStr.match(/^[-]/)) {
                 data.operation.unshift("-");
                 data.result.unshift("-");
+            } else if (operationStr[0] === "-") {
+                data.operation.shift();
+                data.result.shift();
             }
         }
     } else if (button.type == "calculate") {
-        // add symbol = into operation line
-        if (!data.operation.join("").match(/$[=]/) &&
-            data.operation.join("") != ""
-        ) {
-            data.operation.push(button.symbol);
-            updateOperator(data.operation.join(""));
+        let historyStr = data.history.join(""),
+            operationStr = data.operation.join(""),
+            resultStr = data.result.join("");
+        if (historyStr[historyStr.length - 1] !== "=") {
+            data.history.push("=");
         }
 
+        // create an Array store all the number from input
+        let numbersArray = data.history
+            .join("")
+            .split(/[^0-9.]+/g)
+            .filter((i) => i !== "");
+        // convert type value of numbersArray to number type
+        numbersArray = numbersArray.map((i) => Number(i));
+        // create an Array store operator from input
+        let operatorsArray = data.history
+            .join("")
+            .split(/[0-9.=]+/g)
+            .filter((op) => op !== "");
+
+        // add symbol = into operation line
+        if (!data.operation.join("").match(/$[=]/) && operationStr != "") {
+            data.operation.push("=");
+            updateOperator(data.operation.join(""));
+        }
         // display calculate result
-        let preOperation = data.operation.slice();
-        let resultString = data.result.join("");
-        let myResult = eval(resultString);
+        let myResult = eval(resultStr);
         myResult = formatResult(myResult);
         updateResult(myResult);
         data.operation = [];
         data.result = [];
         data.operation.push(myResult);
         data.result.push(myResult);
-        // console.log(preOperation);
-        // console.log(data.operation);
+        if (historyStr[historyStr.length - 1] === "=") {
+            data.result.push(
+                operatorsArray[operatorsArray.length - 1],
+                numbersArray[numbersArray.length - 1]
+            );
+            data.operation.push(
+                convertOperator(operatorsArray[operatorsArray.length - 1]),
+                numbersArray[numbersArray.length - 1]
+            );
+        }
         return;
     }
     updateOperator(data.operation.join(""));
+    console.log(historyStr);
+    console.log(operationStr);
 }
 
 function updateResult(result) {
@@ -205,4 +235,65 @@ function counterNum(number) {
 function isFloat(n) {
     return n % 1 !== 0;
 }
-// check is that operator
+// convert operator to output operation display
+function convertOperator(i) {
+    switch (i) {
+        case "%":
+            return "%";
+        case "+":
+            return "+";
+        case "-":
+            return "-";
+        case "*":
+            return "x";
+        case "/":
+            return "÷";
+    }
+}
+// when press equal button function
+function pressEqual() {
+    let historyStr = data.history.join(""),
+        operationStr = data.operation.join(""),
+        resultStr = data.result.join("");
+    if (historyStr[historyStr.length - 1] !== "=") {
+        data.history.push("=");
+    }
+
+    // create an Array store all the number from input
+    let numbersArray = data.history
+        .join("")
+        .split(/[^0-9.]+/g)
+        .filter((i) => i !== "");
+    // convert type value of numbersArray to number type
+    numbersArray = numbersArray.map((i) => Number(i));
+    // create an Array store operator from input
+    let operatorsArray = data.history
+        .join("")
+        .split(/[0-9.=]+/g)
+        .filter((op) => op !== "");
+
+    // add symbol = into operation line
+    if (!data.operation.join("").match(/$[=]/) && operationStr != "") {
+        data.operation.push("=");
+        updateOperator(data.operation.join(""));
+    }
+    // display calculate result
+    let myResult = eval(resultStr);
+    myResult = formatResult(myResult);
+    updateResult(myResult);
+    data.operation = [];
+    data.result = [];
+    data.operation.push(myResult);
+    data.result.push(myResult);
+    if (historyStr[historyStr.length - 1] === "=") {
+        data.result.push(
+            operatorsArray[operatorsArray.length - 1],
+            numbersArray[numbersArray.length - 1]
+        );
+        data.operation.push(
+            convertOperator(operatorsArray[operatorsArray.length - 1]),
+            numbersArray[numbersArray.length - 1]
+        );
+    }
+    return;
+}
