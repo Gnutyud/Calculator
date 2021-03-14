@@ -65,7 +65,7 @@ function keydown(e) {
         if (historyStr[historyStr.length - 1] === "=") {
             data.operation = [];
             data.result = [];
-            updateResult(e.key);
+            updateResult(0);
         }
         data.operation.push(e.key);
         data.result.push(e.key);
@@ -117,17 +117,17 @@ function keydown(e) {
 function calculator(button) {
     let historyStr = data.history.join(""),
         operationStr = data.operation.join("");
-        if (button.type == "operator") {
-            data.operation.push(button.symbol);
-            data.result.push(button.formula);
-            data.history.push(button.formula);
-        } else
-    if (button.type == "number") {
+    resultStr = data.result.join("");
+    if (button.type == "operator") {
+        data.operation.push(button.symbol);
+        data.result.push(button.formula);
+        data.history.push(button.formula);
+    } else if (button.type == "number") {
         // reset operation
         if (historyStr[historyStr.length - 1] === "=") {
             data.operation = [];
             data.result = [];
-            updateResult(button.formula);
+            updateResult(0);
         }
         data.operation.push(button.symbol);
         data.result.push(button.formula);
@@ -181,18 +181,16 @@ function calculator(button) {
         updateResult(myResult);
         data.operation = [];
         data.result = [];
-        data.operation.push(myResult);
-        data.result.push(myResult);
-        if (historyStr[historyStr.length - 1] === "=") {
-            data.result.push(
-                operatorsArray[operatorsArray.length - 1],
-                numbersArray[numbersArray.length - 1]
-            );
-            data.operation.push(
-                convertOperator(operatorsArray[operatorsArray.length - 1]),
-                numbersArray[numbersArray.length - 1]
-            );
-        }
+        data.result.push(
+            myResult,
+            operatorsArray[operatorsArray.length - 1],
+            numbersArray[numbersArray.length - 1]
+        );
+        data.operation.push(
+            myResult,
+            convertOperator(operatorsArray[operatorsArray.length - 1]),
+            numbersArray[numbersArray.length - 1]
+        );
         return;
     }
     updateOperator(data.operation.join(""));
@@ -283,17 +281,15 @@ function pressEqual() {
     updateResult(myResult);
     data.operation = [];
     data.result = [];
-    data.operation.push(myResult);
-    data.result.push(myResult);
-    if (historyStr[historyStr.length - 1] === "=") {
-        data.result.push(
-            operatorsArray[operatorsArray.length - 1],
-            numbersArray[numbersArray.length - 1]
-        );
-        data.operation.push(
-            convertOperator(operatorsArray[operatorsArray.length - 1]),
-            numbersArray[numbersArray.length - 1]
-        );
-    }
+    data.result.push(
+        myResult,
+        operatorsArray[operatorsArray.length - 1],
+        numbersArray[numbersArray.length - 1]
+    );
+    data.operation.push(
+        myResult,
+        convertOperator(operatorsArray[operatorsArray.length - 1]),
+        numbersArray[numbersArray.length - 1]
+    );
     return;
 }
